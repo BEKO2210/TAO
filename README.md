@@ -1,244 +1,244 @@
-## 🚀 ATLAS Agents — Launching Next Week
+## 🚀 ATLAS Agents — Start nächste Woche
 
-The platform built on top of this repo is launching next week.
+Die auf diesem Repo aufbauende Plattform startet nächste Woche.
 
-**Three ways to use it:**
+**Drei Wege, sie zu nutzen:**
 
-1. **Copy ATLAS** — trade alongside the autoresearch system 
-   in this repo. Live signals, auto-execution, full 
-   transparency. Up 30% since launch.
+1. **ATLAS kopieren** — handle parallel zum Autoresearch-System
+   in diesem Repo. Live-Signale, Auto-Execution, volle
+   Transparenz. Seit Launch +30 %.
 
-2. **Build your own** — describe a strategy in plain English, 
-   backtest on 18 months of real data, deploy live.
+2. **Eigenes bauen** — beschreibe eine Strategie in einfachem Englisch,
+   backteste sie auf 18 Monaten echter Daten, deploye sie live.
 
-3. **Marketplace** — publish your agent, earn when others 
-   copy it.
+3. **Marktplatz** — veröffentliche deinen Agenten und verdiene mit,
+   wenn andere ihn kopieren.
 
-SIMONS is already live on Kalshi prediction markets. 
-60% win rate.
+SIMONS läuft bereits live auf Kalshi-Prediction-Markets.
+60 % Trefferquote.
 
-As a thank you for all the feedback, ideas, and support 
-that helped shape this project — we're giving the GitHub 
-community 20% off. Forever, not just the first month.
+Als Dankeschön für all das Feedback, die Ideen und die
+Unterstützung, die dieses Projekt geprägt haben — wir geben der
+GitHub-Community 20 % Rabatt. Für immer, nicht nur den ersten Monat.
 
 → **[atlasagents.co](https://atlasagents.co)**
-Use code **GITHUB20** at checkout. First 100 only.
+Code **GITHUB20** beim Checkout verwenden. Nur die ersten 100.
 
 ---
 
-# ATLAS - Self-Improving AI Trading Agents
+# ATLAS – Selbstverbessernde KI-Trading-Agenten
 
-**Built by [General Intelligence Capital](https://generalintelligencecapital.com)**
+**Gebaut von [General Intelligence Capital](https://generalintelligencecapital.com)**
 
-[Karpathy's autoresearch](https://github.com/karpathy/autoresearch) + [Soros's reflexivity](https://en.wikipedia.org/wiki/Reflexivity_(social_theory)) + [MiroFish swarm simulation](https://github.com/666ghj/MiroFish) applied to financial markets.
+[Karpathys Autoresearch](https://github.com/karpathy/autoresearch) + [Soros' Reflexivität](https://en.wikipedia.org/wiki/Reflexivity_(social_theory)) + [MiroFish-Schwarmsimulation](https://github.com/666ghj/MiroFish), angewendet auf Finanzmärkte.
 
-The agent prompts are the weights. Sharpe ratio is the loss function. No GPU needed.
+Die Agent-Prompts sind die Weights. Die Sharpe Ratio ist die Loss-Funktion. Keine GPU nötig.
 
-⭐ 944 stars · 202 forks
-
----
-
-## What Is This?
-
-ATLAS is a framework for autonomous AI trading agents that improve their own prompts through market feedback, train on different market regimes, create new agents when they detect knowledge gaps, and simulate reflexive futures to prepare for what's coming.
-
-25+ agents debate markets daily across 4 layers. Every recommendation is scored against real outcomes. The worst-performing agent gets its prompt rewritten. If performance improves, the git commit survives. If not, git revert.
-
-Now running live with real capital.
+⭐ 944 Stars · 202 Forks
 
 ---
 
-## Architecture
+## Was ist das?
 
-### Layer 1 - Macro (10 agents)
+ATLAS ist ein Framework für autonome KI-Trading-Agenten, die ihre eigenen Prompts durch Markt-Feedback verbessern, auf unterschiedlichen Marktregimen trainieren, neue Agenten erschaffen, sobald sie Wissenslücken erkennen, und reflexive Zukünfte simulieren, um auf das Kommende vorbereitet zu sein.
 
-Central bank, geopolitical, China, dollar, yield curve, commodities, volatility, emerging markets, news sentiment, institutional flow.
+25+ Agenten debattieren täglich über Märkte – verteilt auf 4 Layer. Jede Empfehlung wird gegen reale Outcomes gescort. Der schlechteste Agent bekommt seinen Prompt umgeschrieben. Verbessert sich die Performance, überlebt der Git-Commit. Wenn nicht: `git revert`.
 
-These agents set the regime. Risk on or risk off? What's the macro backdrop?
-
-### Layer 2 - Sector Desks (7 agents)
-
-Semiconductor, energy, biotech, consumer, industrials, financials, plus a Bloomberg-style relationship mapper that tracks supply chains, ownership, analyst coverage, and competitive dynamics.
-
-### Layer 3 - Superinvestors (4 agents)
-
-* **Druckenmiller** - macro/momentum: what's the big asymmetric trade?
-* **Aschenbrenner** - AI/compute: who benefits from the capex cycle?
-* **Baker** - deep tech/biotech: who has real IP moats?
-* **Ackman** - quality compounder: pricing power + FCF + catalyst?
-
-### Layer 4 - Decision (4 agents)
-
-* **CRO** - adversarial risk officer: attacks every idea, finds correlated risks
-* **Alpha Discovery** - finds names nobody else mentioned
-* **Autonomous Execution** - converts signals to sized trades
-* **CIO** - synthesises all prior layers, weighted by Darwinian agent scores, makes the final call
+Läuft jetzt live mit echtem Kapital.
 
 ---
 
-## The Autoresearch Loop
+## Architektur
 
-Inspired by [Karpathy's autoresearch](https://github.com/karpathy/autoresearch). Same pattern, different domain.
+### Layer 1 – Macro (10 Agenten)
 
-* System identifies worst agent by rolling Sharpe
-* Generates one targeted prompt modification
-* Runs for 5 trading days
-* Checks if agent's Sharpe improved
-* Keep (git commit) or revert (git reset)
+Zentralbank, Geopolitik, China, Dollar, Zinskurve, Rohstoffe, Volatilität, Emerging Markets, News-Sentiment, Institutional Flow.
 
-The agent prompts are the weights being optimised. Each trading day is one training iteration. A $20/month VM replaces the H100.
+Diese Agenten setzen das Regime. Risk-on oder Risk-off? Wie sieht der Makro-Hintergrund aus?
 
-**Darwinian Weights:** Each agent has a weight between 0.3 (minimum) and 2.5 (maximum). Top quartile agents get weight × 1.05 daily. Bottom quartile get × 0.95. The CIO proportionally weights input by these scores. Good agents get louder. Bad agents get quieter.
+### Layer 2 – Sektor-Desks (7 Agenten)
+
+Halbleiter, Energie, Biotech, Konsum, Industrie, Financials, plus ein Bloomberg-artiger Relationship-Mapper, der Lieferketten, Eigentümerstrukturen, Analyst-Coverage und Wettbewerbsdynamiken trackt.
+
+### Layer 3 – Superinvestoren (4 Agenten)
+
+* **Druckenmiller** – Macro/Momentum: Was ist der große asymmetrische Trade?
+* **Aschenbrenner** – AI/Compute: Wer profitiert vom Capex-Zyklus?
+* **Baker** – Deep Tech/Biotech: Wer hat echte IP-Burggräben?
+* **Ackman** – Quality Compounder: Pricing Power + FCF + Katalysator?
+
+### Layer 4 – Decision (4 Agenten)
+
+* **CRO** – adversarialer Risk-Officer: greift jede Idee an, findet korrelierte Risiken
+* **Alpha Discovery** – findet Namen, die niemand sonst genannt hat
+* **Autonomous Execution** – wandelt Signale in dimensionierte Trades um
+* **CIO** – synthetisiert alle vorherigen Layer, gewichtet nach Darwinian-Agent-Scores, trifft die finale Entscheidung
 
 ---
 
-## 18-Month Backtest Results
+## Der Autoresearch-Loop
 
-**Period:** September 2024 - March 2026 (378 trading days)
+Inspiriert von [Karpathys Autoresearch](https://github.com/karpathy/autoresearch). Gleiches Muster, andere Domäne.
 
-* Prompt modifications attempted: 54
-* Survived (kept): 16 (30%)
-* Reverted: 37 (70%)
-* Deployment phase return: **+22% in 173 days**
-* Best individual pick: **AVGO at $152, held for +128%**
+* System identifiziert den schwächsten Agenten anhand der rollierenden Sharpe Ratio
+* Erzeugt eine gezielte Prompt-Modifikation
+* Läuft 5 Handelstage damit
+* Prüft, ob die Sharpe Ratio des Agenten sich verbessert hat
+* Behalten (`git commit`) oder verwerfen (`git reset`)
 
-The system independently discovered its own portfolio manager (CIO) was its weakest component — downweighting it to minimum before we diagnosed the same issue manually.
+Die Agent-Prompts sind die zu optimierenden Weights. Jeder Handelstag ist eine Trainingsiteration. Eine VM für 20 $/Monat ersetzt die H100.
 
-### Equity Curve
+**Darwinian-Weights:** Jeder Agent hat ein Gewicht zwischen 0,3 (Minimum) und 2,5 (Maximum). Top-Quartil-Agenten werden täglich um × 1,05 hochgewichtet. Bottom-Quartil um × 0,95 heruntergewichtet. Der CIO gewichtet die Inputs proportional zu diesen Scores. Gute Agenten werden lauter. Schlechte leiser.
+
+---
+
+## 18-Monats-Backtest-Ergebnisse
+
+**Zeitraum:** September 2024 – März 2026 (378 Handelstage)
+
+* Versuchte Prompt-Modifikationen: 54
+* Überlebt (behalten): 16 (30 %)
+* Verworfen: 37 (70 %)
+* Rendite in der Deployment-Phase: **+22 % in 173 Tagen**
+* Bester Einzel-Pick: **AVGO bei 152 $, gehalten für +128 %**
+
+Das System hat eigenständig erkannt, dass sein eigener Portfolio-Manager (CIO) die schwächste Komponente war — und ihn auf das Minimum heruntergewichtet, bevor wir das Problem manuell diagnostizierten.
+
+### Equity-Kurve
 
 ![Equity Curve](results/equity_curve.png)
 
 ---
 
-## Agent Spawning
+## Agent-Spawning
 
-The system detects recurring knowledge gaps in its own debates. When the same blind spot appears 3+ times in 5 days, it autonomously creates a new specialist agent at neutral weight.
+Das System erkennt wiederkehrende Wissenslücken in seinen eigenen Debatten. Wenn derselbe blinde Fleck 3-mal oder mehr in 5 Tagen auftaucht, erzeugt es autonom einen neuen Spezialisten-Agenten mit neutralem Gewicht.
 
-During a 6-month spawning test (Jul-Dec 2024):
-- 9 agents spawned autonomously — credit markets, earnings calendar, options flow, liquidity conditions, positioning data, earnings guidance, retail sentiment, technical levels
-- 3 went extinct (stuck at minimum weight for 20+ days)
-- 6 survived Darwinian selection and reached maximum weight
-- Zero human involvement in deciding what to create or when
+In einem 6-monatigen Spawning-Test (Jul–Dez 2024):
+- 9 Agenten autonom gespawned — Credit Markets, Earnings-Kalender, Options Flow, Liquiditätsbedingungen, Positionierungsdaten, Earnings-Guidance, Retail-Sentiment, Technische Levels
+- 3 sind ausgestorben (mehr als 20 Tage am Mindestgewicht festgesetzt)
+- 6 haben die Darwinian-Selektion überlebt und das Maximum erreicht
+- Null menschliche Beteiligung bei der Entscheidung, was wann erschaffen wird
 
-The system grew its own team from 25 to 31 agents based on what it learned it didn't know.
+Das System ist von 25 auf 31 Agenten gewachsen — basierend darauf, was es selbst als nicht gewusst erkannt hat.
 
 ---
 
-## All Seasons (PRISM) — Regime-Specific Training
+## All Seasons (PRISM) – Regime-spezifisches Training
 
-We don't train one set of agents and hope they work everywhere. We train separate cohorts on distinct market regimes.
+Wir trainieren nicht einen Satz Agenten und hoffen, dass er überall funktioniert. Wir trainieren separate Kohorten auf unterschiedlichen Marktregimen.
 
-Same starting agents. Same vanilla prompts. Different evolutionary environments. Completely different survival instincts.
+Gleiche Start-Agenten. Gleiche Vanilla-Prompts. Unterschiedliche evolutionäre Umgebungen. Vollständig unterschiedliche Überlebensinstinkte.
 
-| Cohort | Period | Return | Modifications Kept | Key Learning |
-|--------|--------|--------|--------------------|--------------|
-| Bull/Low Vol | 2016-2018 | +7.7% | 180/509 (35%) | Exit vol longs when events resolve peacefully |
-| Crisis (COVID) | 2020 Q1-Q2 | -13.1% | 0/3 (0%) | Crashes too fast for autoresearch — agents need to arrive pre-trained |
-| Rate Tightening | 2022-2023 | -30.2% | 38/89 (43%) | Don't flip-flop during Fed weeks — 15-day minimum between reversals |
-| Recovery | 2020 Q2-Q4 | -29.0% | 0/1 (0%) | Same problem as crisis — too fast for the feedback loop |
-| Euphoria | 2021 | +14.3% | 119/243 (49%) | Momentum confirmation before shorts, cap conviction during political crises |
+| Kohorte | Zeitraum | Rendite | Behaltene Mods | Wichtigste Erkenntnis |
+|---------|----------|---------|-----------------|------------------------|
+| Bull/Niedrige Vola | 2016–2018 | +7,7 % | 180/509 (35 %) | Vola-Longs schließen, sobald Events friedlich aufgelöst werden |
+| Crisis (COVID) | 2020 Q1–Q2 | -13,1 % | 0/3 (0 %) | Crashes sind zu schnell für Autoresearch — Agenten müssen vortrainiert ankommen |
+| Zinserhöhung | 2022–2023 | -30,2 % | 38/89 (43 %) | Nicht in Fed-Wochen flip-floppen — mindestens 15 Tage zwischen Reversals |
+| Recovery | 2020 Q2–Q4 | -29,0 % | 0/1 (0 %) | Gleiches Problem wie Crisis — zu schnell für die Feedback-Schleife |
+| Euphorie | 2021 | +14,3 % | 119/243 (49 %) | Momentum-Bestätigung vor Shorts, Conviction in politischen Krisen begrenzen |
 
-**Convergent Evolution:** All five cohorts independently discovered the same meta-rules — cap conviction, use VIX as regime filter, enforce hard position limits, never override risk management. Nobody programmed caution. Every cohort learned it from losing money when overconfident.
+**Konvergente Evolution:** Alle fünf Kohorten haben eigenständig dieselben Meta-Regeln entdeckt — Conviction begrenzen, VIX als Regime-Filter nutzen, harte Positionslimits durchsetzen, Risk-Management nie übersteuern. Niemand hat Vorsicht einprogrammiert. Jede Kohorte hat sie gelernt, indem sie bei Selbstüberschätzung Geld verloren hat.
 
-**Divergent Evolution:** The same volatility agent started at 844 bytes in every cohort:
-- Bull markets: grew to 121,260 bytes (143x). Learned "exit vol longs immediately when events resolve peacefully."
-- Rate tightening: grew to 10,354 bytes. Learned "NEVER buy VXX when VIX is 15-25."
-- Euphoria: grew to 1,998 bytes. Learned "require VIX above 30 before going long vol."
+**Divergente Evolution:** Derselbe Volatilitäts-Agent startete in jeder Kohorte mit 844 Bytes:
+- Bull-Märkte: gewachsen auf 121.260 Bytes (143-fach). Hat gelernt: „Vola-Longs sofort schließen, wenn Events friedlich aufgelöst werden."
+- Zinserhöhung: gewachsen auf 10.354 Bytes. Hat gelernt: „NIEMALS VXX kaufen, wenn der VIX zwischen 15 und 25 liegt."
+- Euphorie: gewachsen auf 1.998 Bytes. Hat gelernt: „VIX über 30 ist Bedingung, bevor man Vola long geht."
 
-Same agent. Same starting prompt. Three completely different survival strategies shaped by three different markets.
+Gleicher Agent. Gleicher Start-Prompt. Drei vollständig unterschiedliche Überlebensstrategien, geformt durch drei unterschiedliche Märkte.
 
 ---
 
 ## JANUS Meta-Layer
 
-Multiple trained cohorts produce different recommendations. JANUS sits above all cohorts and algorithmically weights them by recent accuracy.
+Mehrere trainierte Kohorten produzieren unterschiedliche Empfehlungen. JANUS sitzt über allen Kohorten und gewichtet sie algorithmisch nach jüngster Treffergenauigkeit.
 
-The weight differential between cohorts is an emergent regime detector:
-- When short-window agents outperform → **NOVEL REGIME**
-- When long-window agents outperform → **HISTORICAL REGIME**
-- When they're roughly equal → **MIXED**
+Das Gewichtsdifferential zwischen den Kohorten ist ein emergenter Regime-Detektor:
+- Wenn Short-Window-Agenten outperformen → **NOVEL REGIME**
+- Wenn Long-Window-Agenten outperformen → **HISTORICAL REGIME**
+- Wenn beide etwa gleichauf liegen → **MIXED**
 
-We didn't build a regime detector. It emerged from tracking which cohort gets things right.
-
----
-
-## Soros Reflexivity Engine
-
-Markets don't just reflect reality — they change it. We built reflexive feedback loops into the simulation framework.
-
-Five feedback loops modelled:
-1. **Price → Fundamentals**: Stock drops >15% trigger credit downgrades, talent flight, capex cuts. Rises >20% trigger cheap capital, talent attraction, customer confidence.
-2. **P&L → Behaviour**: Fund drawdown >10% → forced selling cascade. Gains >15% → increased position sizes and concentrated bets.
-3. **Narrative → Flows**: 3+ analysts converge on thesis → retail flow follows. Contrarian narratives emerge after extended consensus.
-4. **Market → Policy**: Equity drawdown >15% → central bank signals easing. Oil >$130 → strategic reserve releases.
-5. **Reflexive Reversal Detection**: Feedback loop running 5+ rounds in one direction → flagged as reflexive extreme. Maximum consensus = maximum fragility.
-
-First detection: Gold bullish consensus appeared in 4 of 5 simulation rounds — flagged as a crowded trade with 32% reversal probability. That's Soros in code.
+Wir haben keinen Regime-Detektor gebaut. Er ist daraus entstanden, dass wir verfolgt haben, welche Kohorte richtig liegt.
 
 ---
 
-## MiroFish Swarm Simulation Integration
+## Soros-Reflexivitäts-Engine
 
-Integrated with [MiroFish](https://github.com/666ghj/MiroFish), a swarm intelligence engine that generates parallel digital worlds populated by thousands of AI agents.
+Märkte spiegeln die Realität nicht nur — sie verändern sie. Wir haben reflexive Feedback-Schleifen ins Simulations-Framework eingebaut.
 
-Our trading agents don't just learn from the past — they train on simulated futures:
+Fünf modellierte Feedback-Loops:
+1. **Preis → Fundamentaldaten:** Aktiendrops > 15 % triggern Bonitätsabstufungen, Talent-Abwanderung, Capex-Kürzungen. Anstiege > 20 % triggern günstiges Kapital, Talent-Anziehung, Kunden-Vertrauen.
+2. **P&L → Verhalten:** Drawdown eines Fonds > 10 % → erzwungene Verkaufskaskade. Gewinne > 15 % → größere Positionen und konzentrierte Wetten.
+3. **Narrativ → Flows:** 3+ Analysten konvergieren auf eine These → Retail-Flow folgt. Gegenläufige Narrative entstehen nach längerem Konsens.
+4. **Markt → Politik:** Aktien-Drawdown > 15 % → Zentralbank signalisiert Lockerung. Öl > 130 $ → Freigabe strategischer Reserven.
+5. **Erkennung reflexiver Umkehrungen:** Feedback-Loop läuft 5+ Runden in eine Richtung → als reflexives Extrem markiert. Maximaler Konsens = maximale Fragilität.
 
-- Overnight, the system generates branching scenarios (geopolitical escalation, Fed policy, earnings shocks, black swans)
-- Thousands of simulated agents (fund managers, central bankers, retail traders, corporate executives) interact with reflexive feedback
-- ATLAS trading agents are trained inside these simulated futures using the same Darwinian loop
-- Agents that navigate simulated futures well get upweighted
-- Predictions scored against actual outcomes to improve simulation accuracy
-
-**First result:** Druckenmiller-style agent scores 1.0 in simulated crashes but 0.22 in melt-ups. Quality compounder agent is the opposite. The system knows which instincts to trust before the regime arrives — not after.
-
----
-
-## Key Insight
-
-The orchestration layer matters as much as the intelligence layer.
-
-Individual agents improved measurably through autoresearch. But portfolio returns depend on how agent signals are converted to sized positions. The synthesis/decision layer is the bottleneck. Improving individual agent intelligence without improving orchestration yields diminishing returns.
+Erste Detektion: Bullischer Gold-Konsens tauchte in 4 von 5 Simulationsrunden auf — geflaggt als überfüllter Trade mit 32 % Reversal-Wahrscheinlichkeit. Das ist Soros in Code.
 
 ---
 
-## What's Included
+## MiroFish-Schwarmsimulations-Integration
 
-* Framework architecture and pipeline structure
-* Autoresearch loop design
-* Backtest results and equity curve
-* All Seasons (PRISM) methodology and results
-* Agent spawning mechanism
-* JANUS meta-layer design
-* Soros reflexivity engine
-* MiroFish integration bridge
-* Example placeholder prompts (generic, not trained)
+Integriert mit [MiroFish](https://github.com/666ghj/MiroFish), einer Schwarmintelligenz-Engine, die parallele digitale Welten mit Tausenden KI-Agenten erzeugt.
 
-## What's NOT Included
+Unsere Trading-Agenten lernen nicht nur aus der Vergangenheit — sie trainieren auf simulierten Zukünften:
 
-* Trained agent prompts (proprietary — evolutionary products of market feedback)
-* PRISM evolved prompts per regime
-* CIO active management rules
-* Agent scorecard data
-* Live portfolio positions
-* Darwinian weight values
-* MiroFish simulation outputs
+- Über Nacht generiert das System verzweigende Szenarien (geopolitische Eskalation, Fed-Politik, Earnings-Schocks, Black Swans)
+- Tausende simulierter Agenten (Fondsmanager, Zentralbanker, Retail-Trader, Konzern-Vorstände) interagieren mit reflexivem Feedback
+- ATLAS-Trading-Agenten werden in diesen simulierten Zukünften per derselben Darwinian-Loop trainiert
+- Agenten, die simulierte Zukünfte gut navigieren, werden hochgewichtet
+- Vorhersagen werden gegen tatsächliche Outcomes gescort, um die Simulationsgenauigkeit zu verbessern
 
-The trained prompts are the core IP. A competitor starting today is hundreds of iterations behind. That gap widens every day.
+**Erstes Ergebnis:** Druckenmiller-artiger Agent erreicht in simulierten Crashs einen Score von 1,0, in Melt-ups aber nur 0,22. Der Quality-Compounder-Agent ist genau umgekehrt. Das System weiß, welchen Instinkten es vertrauen kann, bevor das Regime eintritt — nicht erst danach.
 
 ---
 
-## Tech Stack
+## Kerneinsicht
 
-* **Agents:** Claude Sonnet (Anthropic API)
-* **Simulation:** MiroFish swarm engine
-* **Data:** FMP, Finnhub, Polygon, FRED
-* **Infrastructure:** Azure VM ($20/month)
-* **Version Control:** Git feature branches for autoresearch tracking
-* **Cost:** ~$50-80 for full 18-month backtest, ~$30 for all five PRISM cohorts
+Die Orchestrierungsschicht zählt genauso viel wie die Intelligenzschicht.
+
+Einzelne Agenten haben sich durch Autoresearch messbar verbessert. Aber Portfolio-Renditen hängen davon ab, wie Agentensignale in dimensionierte Positionen übersetzt werden. Die Synthese-/Entscheidungs-Schicht ist der Bottleneck. Die Intelligenz einzelner Agenten zu verbessern, ohne die Orchestrierung zu verbessern, bringt abnehmende Erträge.
 
 ---
 
-## Contact
+## Was enthalten ist
+
+* Framework-Architektur und Pipeline-Struktur
+* Autoresearch-Loop-Design
+* Backtest-Ergebnisse und Equity-Kurve
+* All-Seasons-(PRISM)-Methodik und -Ergebnisse
+* Agent-Spawning-Mechanismus
+* JANUS-Meta-Layer-Design
+* Soros-Reflexivitäts-Engine
+* MiroFish-Integrations-Bridge
+* Beispielhafte Platzhalter-Prompts (generisch, untrainiert)
+
+## Was NICHT enthalten ist
+
+* Trainierte Agent-Prompts (proprietär — evolutionäres Produkt aus Markt-Feedback)
+* Per-Regime evolvierte PRISM-Prompts
+* CIO-Active-Management-Regeln
+* Agent-Scorecard-Daten
+* Live-Portfolio-Positionen
+* Darwinian-Gewichtungswerte
+* MiroFish-Simulations-Outputs
+
+Die trainierten Prompts sind die Kern-IP. Ein Wettbewerber, der heute startet, ist Hunderte Iterationen zurück. Diese Lücke wächst jeden Tag.
+
+---
+
+## Tech-Stack
+
+* **Agenten:** Claude Sonnet (Anthropic API)
+* **Simulation:** MiroFish-Schwarm-Engine
+* **Daten:** FMP, Finnhub, Polygon, FRED
+* **Infrastruktur:** Azure VM (20 $/Monat)
+* **Versionskontrolle:** Git-Feature-Branches für Autoresearch-Tracking
+* **Kosten:** ca. 50–80 $ für den vollen 18-Monats-Backtest, ca. 30 $ für alle fünf PRISM-Kohorten
+
+---
+
+## Kontakt
 
 **Chris Worsey** — CEO & Technical Founder, General Intelligence Capital
 
