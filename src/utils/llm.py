@@ -1,5 +1,10 @@
-"""Anthropic API wrapper with retries, JSON parsing, and prompt caching."""
+"""Anthropic API wrapper with retries, JSON parsing, and prompt caching.
+
+Set LLM_MODE=mock in env (or call set_mock(True)) to use the deterministic
+mock instead of real Claude calls. Useful for cheap end-to-end testing.
+"""
 import json
+import os
 import re
 import time
 from typing import Any, Dict, List, Optional
@@ -20,6 +25,17 @@ try:
 except ImportError:
     anthropic = None
     _client = None
+
+_MOCK_MODE = os.getenv("LLM_MODE", "").lower() == "mock"
+
+
+def set_mock(enabled: bool) -> None:
+    global _MOCK_MODE
+    _MOCK_MODE = enabled
+
+
+def is_mock() -> bool:
+    return _MOCK_MODE
 
 
 class LLMError(RuntimeError):
@@ -44,6 +60,9 @@ def call(
     retries: int = 3,
 ) -> str:
     """Call Claude. Returns raw text. Caches the system prompt by default."""
+    if _MOCK_MODE:
+        from utils import mock_llm
+        return mock_llm.call(user, system=system)
     client = _client_or_raise()
     model = model or CLAUDE_MODEL
     max_tokens = max_tokens or CLAUDE_MAX_TOKENS
@@ -84,6 +103,9 @@ _JSON_RE = re.compile(r"\{[\s\S]*\}|\[[\s\S]*\]")
 
 def call_json(user: str, system: Optional[str] = None, **kwargs) -> Any:
     """Like call(), but parses the response as JSON. Tolerates ```json fences and prose around it."""
+    if _MOCK_MODE:
+        from utils import mock_llm
+        return mock_llm.call_json(user, system=system)
     raw = call(user, system=system, **kwargs)
     return parse_json_blob(raw)
 
@@ -106,4 +128,4 @@ def parse_json_blob(raw: str) -> Any:
 
 
 def is_available() -> bool:
-    return _client is not None
+    return _MOCK_MODE or _client is not None

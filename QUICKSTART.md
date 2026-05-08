@@ -33,6 +33,20 @@ python src/cli.py cycle
 Ruft alle 25 Agenten auf (≈ 25 Claude-Calls), schreibt das Ergebnis nach
 `src/data/state/cycles/<cycle_id>.json` und loggt jede Agent-Empfehlung.
 
+### Mock-Modus (kostenlos, ohne API-Key)
+
+```bash
+python src/cli.py cycle --mock
+python src/cli.py backtest 2025-01-02 2025-01-31 --mock
+LLM_MODE=mock python src/cli.py cycle
+```
+
+Erzeugt deterministische, agent-bewusste synthetische Outputs. Die Pipeline,
+das Scoring, die Darwinian-Weights und Autoresearch laufen wie im Live-Modus
+— nur mit synthetischen Agent-Outputs statt echter Claude-Calls. **Bitte
+beachten:** Mock-Outputs erzeugen keinen echten Alpha — sie testen nur die
+Plumbing.
+
 ## 5. Kurzen Backtest laufen lassen
 
 ```bash
@@ -40,12 +54,23 @@ python src/cli.py backtest 2025-01-02 2025-01-10
 ```
 
 Iteriert über die Handelstage, scort vorherige Empfehlungen, aktualisiert
-Darwinian-Weights, läuft Autoresearch.
+Darwinian-Weights, läuft Autoresearch. Schreibt parallel ein
+SPY-Buy-and-Hold-Benchmark mit (`src/data/state/benchmark_trajectory.json`)
+und gibt am Ende eine Tabelle mit Sharpe / Sortino / Max-DD / Alpha vs SPY
+aus.
 
 Mit `--no-autoresearch` kann der Selbstmodifikations-Loop deaktiviert
-werden.
+werden, mit `--no-reset` wird der vorhandene Portfolio-State weitergenutzt
+(Fortsetzungs-Backtest).
 
-## 6. Status
+## 6. Performance-Metriken
+
+```bash
+python src/cli.py metrics      # Tabelle Strategy vs SPY
+python src/cli.py reset        # State löschen, frischer Start
+```
+
+## 7. Status & Score
 
 ```bash
 python src/cli.py status      # Zähler
@@ -53,10 +78,11 @@ python src/cli.py weights     # aktuelle Darwinian-Gewichte
 python src/cli.py score       # Forward-Returns nachziehen + Sharpes
 ```
 
-## 7. Eine Autoresearch-Iteration manuell auslösen
+## 8. Eine Autoresearch-Iteration manuell auslösen
 
 ```bash
 python src/cli.py autoresearch
+python src/cli.py autoresearch --mock   # ohne API-Kosten
 ```
 
 Wenn ein offenes Experiment fällig ist, wird es ausgewertet (gehalten
