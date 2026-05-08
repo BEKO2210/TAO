@@ -25,6 +25,12 @@ from utils.logging_utils import get_logger
 
 logger = get_logger("eod_cycle")
 
+try:  # mirofish predictions are optional context
+    from mirofish.mirofish_context import get_mirofish_context
+except Exception:
+    def get_mirofish_context(*_a, **_kw):
+        return None
+
 CYCLE_OUT_DIR = STATE_DIR / "cycles"
 CYCLE_OUT_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -142,11 +148,15 @@ def _run_layer(specs, context: str, output_format: str, max_workers: int = 8) ->
 def _macro_context(market_data: MarketData) -> str:
     snap = market_data.snapshot([])
     macro = snap.get("macro", {})
-    return (
-        f"DATE: {date.today().isoformat()}\n"
-        f"REGIME: {snap.get('regime')}\n"
-        f"MACRO SNAPSHOT:\n{json.dumps(macro, indent=2, default=str)}\n"
-    )
+    parts = [
+        f"DATE: {date.today().isoformat()}",
+        f"REGIME: {snap.get('regime')}",
+        f"MACRO SNAPSHOT:\n{json.dumps(macro, indent=2, default=str)}",
+    ]
+    mf = get_mirofish_context()
+    if mf:
+        parts.append(mf)
+    return "\n".join(parts) + "\n"
 
 
 def _sector_context(market_data: MarketData, regime: str, macro_summary: str, spec) -> str:
@@ -171,14 +181,22 @@ def _super_context(regime: str, macro_summary: str, sector_picks: List[Dict]) ->
 def _decision_context(regime: str, macro_summary: str,
                       sector_picks: List[Dict], super_endorsed: List[Dict],
                       weights: Dict[str, float]) -> str:
-    return (
-        f"DATE: {date.today().isoformat()}\n"
-        f"REGIME: {regime}\n\n"
-        f"MACRO SUMMARY:\n{macro_summary}\n\n"
-        f"SECTOR PICKS:\n{json.dumps(sector_picks, indent=2, default=str)}\n\n"
-        f"SUPERINVESTOR ENDORSED:\n{json.dumps(super_endorsed, indent=2, default=str)}\n\n"
-        f"DARWINIAN WEIGHTS:\n{json.dumps(weights, indent=2, default=str)}\n"
-    )
+    parts = [
+        f"DATE: {date.today().isoformat()}",
+        f"REGIME: {regime}",
+        "",
+        f"MACRO SUMMARY:\n{macro_summary}",
+        "",
+        f"SECTOR PICKS:\n{json.dumps(sector_picks, indent=2, default=str)}",
+        "",
+        f"SUPERINVESTOR ENDORSED:\n{json.dumps(super_endorsed, indent=2, default=str)}",
+        "",
+        f"DARWINIAN WEIGHTS:\n{json.dumps(weights, indent=2, default=str)}",
+    ]
+    mf = get_mirofish_context()
+    if mf:
+        parts.extend(["", mf])
+    return "\n".join(parts) + "\n"
 
 
 # ---------------------------------------------------------------------------

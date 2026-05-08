@@ -17,8 +17,9 @@ from datetime import date, datetime, timedelta
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from agents import eod_cycle, registry, scorecard
+from agents import eod_cycle, metrics, registry, scorecard
 from agents.autoresearch import run_one_iteration as autoresearch_iter
+from agents.execution_costs import DEFAULT as DEFAULT_COSTS, CostModel
 from agents.market_data import MarketData
 from config.settings import (
     INITIAL_PORTFOLIO_VALUE,
@@ -33,7 +34,9 @@ logger = get_logger("backtest")
 
 PORTFOLIO_FILE = STATE_DIR / "portfolio.json"
 TRAJECTORY_FILE = STATE_DIR / "portfolio_trajectory.json"
+BENCHMARK_FILE = STATE_DIR / "benchmark_trajectory.json"
 RUN_LOG_FILE = STATE_DIR / "backtest_run_log.json"
+BENCHMARK_TICKER = "SPY"
 
 REPO_ROOT = ROOT_DIR.parent  # src/.. = repo root
 
@@ -103,8 +106,13 @@ def _portfolio_value(p: Portfolio, market: MarketData, on_date: date) -> float:
 
 
 def execute_actions(p: Portfolio, actions: List[Dict[str, Any]],
-                    market: MarketData, on_date: date) -> List[Dict]:
-    """Apply CIO actions to the portfolio. Returns list of executed trades."""
+                    market: MarketData, on_date: date,
+                    costs: CostModel = DEFAULT_COSTS) -> List[Dict]:
+    """Apply CIO actions to the portfolio with realistic execution costs.
+
+    Slippage + half-spread worsens the fill price; commission and short-borrow
+    costs are charged to cash separately.
+    """
     pv = _portfolio_value(p, market, on_date)
     executed = []
     for a in actions:
@@ -114,39 +122,63 @@ def execute_actions(p: Portfolio, actions: List[Dict[str, Any]],
             continue
         size_pct = min(float(a.get("size_pct", 2.0)), MAX_POSITION_PCT * 100) / 100.0
         target_dollars = pv * size_pct
-        price = market.close_on(ticker, on_date)
-        if not price or price <= 0:
+        mid = market.close_on(ticker, on_date)
+        if not mid or mid <= 0:
             continue
         direction = (a.get("direction") or "LONG").upper()
-        shares = round(target_dollars / price, 4)
+        shares = round(target_dollars / mid, 4)
 
         existing = p.positions.get(ticker)
         if action in ("BUY", "ADD"):
+            fill = mid * (1 + (costs.slippage_bps + costs.half_spread_bps) / 10_000.0) \
+                if direction == "LONG" \
+                else mid * (1 - (costs.slippage_bps + costs.half_spread_bps) / 10_000.0)
+            commission = costs.trade_cost(shares, mid)
             if existing and existing.direction == direction:
-                # average up
-                total_cost = existing.shares * existing.entry_price + shares * price
+                total_cost = existing.shares * existing.entry_price + shares * fill
                 existing.shares += shares
-                existing.entry_price = total_cost / existing.shares if existing.shares else price
+                existing.entry_price = total_cost / existing.shares if existing.shares else fill
             else:
                 if existing:
-                    p.realized_pnl += (price - existing.entry_price) * existing.shares * (
+                    p.realized_pnl += (mid - existing.entry_price) * existing.shares * (
                         1 if existing.direction == "LONG" else -1
                     )
-                p.positions[ticker] = Position(ticker, direction, shares, price, on_date.isoformat())
-            p.cash -= shares * price * (1 if direction == "LONG" else -1)
-            executed.append({"ticker": ticker, "action": action, "shares": shares, "price": price})
+                p.positions[ticker] = Position(ticker, direction, shares, fill,
+                                               on_date.isoformat())
+            p.cash -= shares * fill * (1 if direction == "LONG" else -1)
+            p.cash -= commission
+            executed.append({"ticker": ticker, "action": action, "shares": shares,
+                             "fill_price": round(fill, 4), "mid": round(mid, 4),
+                             "commission": round(commission, 2)})
         elif action in ("SELL", "TRIM", "EXIT"):
             if not existing:
                 continue
             sell_shares = existing.shares if action == "EXIT" else min(shares, existing.shares)
+            fill = mid * (1 - (costs.slippage_bps + costs.half_spread_bps) / 10_000.0) \
+                if existing.direction == "LONG" \
+                else mid * (1 + (costs.slippage_bps + costs.half_spread_bps) / 10_000.0)
+            commission = costs.trade_cost(sell_shares, mid)
             sign = 1 if existing.direction == "LONG" else -1
-            p.realized_pnl += (price - existing.entry_price) * sell_shares * sign
-            p.cash += sell_shares * price * sign
+            p.realized_pnl += (fill - existing.entry_price) * sell_shares * sign
+            p.cash += sell_shares * fill * sign
+            p.cash -= commission
             existing.shares -= sell_shares
             if existing.shares <= 1e-6:
                 del p.positions[ticker]
             executed.append({"ticker": ticker, "action": action,
-                             "shares": sell_shares, "price": price})
+                             "shares": sell_shares, "fill_price": round(fill, 4),
+                             "mid": round(mid, 4),
+                             "commission": round(commission, 2)})
+    # short-borrow cost on open shorts
+    short_borrow = 0.0
+    for pos in p.positions.values():
+        if pos.direction == "SHORT":
+            mid = market.close_on(pos.ticker, on_date) or pos.entry_price
+            short_borrow += costs.borrow_cost_per_day(pos.shares * mid)
+    if short_borrow > 0:
+        p.cash -= short_borrow
+        executed.append({"ticker": "_borrow", "action": "BORROW",
+                         "cost": round(short_borrow, 2)})
     return executed
 
 
@@ -220,26 +252,56 @@ def run_one_day(cycle_date: date, market: MarketData, portfolio: Portfolio,
     return daily_record
 
 
-def _append_trajectory(record: Dict) -> None:
+def _append_trajectory(record: Dict, path: Path = TRAJECTORY_FILE) -> None:
     traj = []
-    if TRAJECTORY_FILE.exists():
+    if path.exists():
         try:
-            traj = json.loads(TRAJECTORY_FILE.read_text())
+            traj = json.loads(path.read_text())
         except Exception:
             traj = []
     traj.append(record)
-    TRAJECTORY_FILE.write_text(json.dumps(traj, indent=2, default=str))
+    path.write_text(json.dumps(traj, indent=2, default=str))
+
+
+def _record_benchmark(market: MarketData, on_date: date,
+                      starting_value: float, entry_price: Optional[float]) -> Dict:
+    """Track SPY buy-and-hold side by side with the strategy."""
+    price = market.close_on(BENCHMARK_TICKER, on_date)
+    if price is None or entry_price is None or entry_price <= 0:
+        value = starting_value
+    else:
+        value = starting_value * (price / entry_price)
+    rec = {"date": on_date.isoformat(), "ticker": BENCHMARK_TICKER,
+           "price": price, "value": value}
+    _append_trajectory(rec, BENCHMARK_FILE)
+    return rec
+
+
+def reset_state() -> None:
+    """Clear portfolio + trajectory + benchmark + metrics. Use before fresh backtests."""
+    for f in (PORTFOLIO_FILE, TRAJECTORY_FILE, BENCHMARK_FILE, RUN_LOG_FILE):
+        if f.exists():
+            f.unlink()
+    logger.info("Cleared persistent state.")
 
 
 # ---------------------------------------------------------------------------
 # Backtest entry point
 # ---------------------------------------------------------------------------
 
-def run_backtest(start: date, end: date, use_autoresearch: bool = True) -> Dict:
+def run_backtest(start: date, end: date, use_autoresearch: bool = True,
+                 reset: bool = True) -> Dict:
+    if reset:
+        reset_state()
     market = MarketData()
     portfolio = load_portfolio()
     days = _business_days(start, end)
     logger.info(f"Backtest: {len(days)} trading days from {start} to {end}")
+
+    benchmark_entry = market.close_on(BENCHMARK_TICKER, days[0]) if days else None
+    if benchmark_entry is None:
+        logger.warning(f"No {BENCHMARK_TICKER} entry price for {days[0] if days else 'n/a'} — "
+                       f"benchmark comparison will be empty.")
 
     summary = {
         "start": start.isoformat(),
@@ -252,6 +314,7 @@ def run_backtest(start: date, end: date, use_autoresearch: bool = True) -> Dict:
         try:
             rec = run_one_day(d, market, portfolio, use_autoresearch=use_autoresearch)
             summary["daily_records"].append(rec)
+            _record_benchmark(market, d, INITIAL_PORTFOLIO_VALUE, benchmark_entry)
         except KeyboardInterrupt:
             logger.warning("Interrupted by user; saving partial state.")
             break
@@ -263,6 +326,7 @@ def run_backtest(start: date, end: date, use_autoresearch: bool = True) -> Dict:
     summary["ending_value"] = final_pv
     summary["total_return_pct"] = (final_pv / INITIAL_PORTFOLIO_VALUE - 1.0) * 100
     summary["completed_at"] = datetime.utcnow().isoformat()
+    summary["metrics"] = metrics.summarise()
     RUN_LOG_FILE.write_text(json.dumps(summary, indent=2, default=str))
     logger.info(f"Backtest complete. Final value: ${final_pv:,.2f} "
                 f"({summary['total_return_pct']:+.2f}%)")
