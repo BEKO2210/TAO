@@ -1,0 +1,15 @@
+__pycache__/
+*.pyc
+*.pyo
+.env
+.venv/
+venv/
+env/
+.pytest_cache/
+.mypy_cache/
+.DS_Store
+logs/
+src/data/state/cycles/
+src/data/state/price_cache/
+src/data/state/*.json
+!src/data/state/.gitkeep
